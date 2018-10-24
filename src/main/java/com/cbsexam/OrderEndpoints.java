@@ -54,7 +54,7 @@ public class OrderEndpoints {
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
+    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
   }
 
   @POST
