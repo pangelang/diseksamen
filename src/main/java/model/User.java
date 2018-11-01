@@ -1,5 +1,7 @@
 package model;
 
+import utils.Hashing;
+
 public class User {
 
   public int id;
