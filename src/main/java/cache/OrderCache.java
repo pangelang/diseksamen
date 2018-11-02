@@ -29,8 +29,8 @@ public class OrderCache {
         // If the list is empty we also check for new orders
         //Changed isEmpty() to == null
         if (forceUpdate
-                || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
-                || this.orders == null) {
+                || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L))
+                || this.orders.isEmpty()) {
 
             // Get orders from controller, since we wish to update.
             ArrayList<Order> orders = OrderController.getOrders();
