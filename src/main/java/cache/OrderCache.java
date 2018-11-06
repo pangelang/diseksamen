@@ -34,8 +34,6 @@ public class OrderCache {
             // Get orders from controller, since we wish to update.
             ArrayList<Order> orders = OrderController.getOrders();
 
-            System.out.println("Johnny");
-
             // Set orders for the instance and set created timestamp
             this.orders = orders;
             this.created = System.currentTimeMillis() / 1000L;
