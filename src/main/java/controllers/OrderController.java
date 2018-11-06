@@ -128,7 +128,7 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    //https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
+    //Kilde: https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
     try {
       //setting AutoCommit to false
       dbCon.getConnection().setAutoCommit(false);

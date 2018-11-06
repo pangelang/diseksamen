@@ -8,15 +8,14 @@ public final class Encryption {
     if (Config.getEncryption()) {
 
       // The key is predefined and hidden in code
-      // TODO: Create a more complex code and store it somewhere better
-      char[] key = {'C', 'B', 'S', 'E', 'R', 'I', 'K', 'K', 'E', 'F', 'O', 'R', 'T', 'H', 'O', 'M', 'A', 'S'};
+      // TODO: Create a more complex code and store it somewhere better: FIX (See Config)
 
       // Stringbuilder enables you to play around with strings and make useful stuff
       StringBuilder thisIsEncrypted = new StringBuilder();
 
       // TODO: This is where the magic of XOR is happening. Are you able to explain what is going on?
       for (int i = 0; i < rawString.length(); i++) {
-        thisIsEncrypted.append((char) (rawString.charAt(i) ^ key[i % key.length]));
+        thisIsEncrypted.append((char) (rawString.charAt(i) ^ Config.getKey()[i % Config.getKey().length]));
       }
 
       // We return the encrypted string
