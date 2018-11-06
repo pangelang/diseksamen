@@ -27,13 +27,14 @@ public class OrderCache {
         // If we whish to clear cache, we can set force update.
         // Otherwise we look at the age of the cache and figure out if we should update.
         // If the list is empty we also check for new orders
-        //Changed isEmpty() to == null
         if (forceUpdate
                 || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L))
                 || this.orders.isEmpty()) {
 
             // Get orders from controller, since we wish to update.
             ArrayList<Order> orders = OrderController.getOrders();
+
+            System.out.println("Johnny");
 
             // Set orders for the instance and set created timestamp
             this.orders = orders;
