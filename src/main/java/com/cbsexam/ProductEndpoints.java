@@ -18,6 +18,7 @@ import utils.Encryption;
 public class ProductEndpoints {
 
   private static ProductCache productCache = new ProductCache();
+  private static boolean forceUpdate = true;
 
   /**
    * @param idProduct
@@ -48,7 +49,7 @@ public class ProductEndpoints {
 
     // Call our controller-layer in order to get the order from the DB
     //Changed getProducts method to the one from ProductCache
-    ArrayList<Product> products = productCache.getProducts(false);
+    ArrayList<Product> products = productCache.getProducts(forceUpdate);
 
     // TODO: Add Encryption to JSON: FIX
     // We convert the java object to json with GSON library imported in Maven
@@ -56,6 +57,9 @@ public class ProductEndpoints {
 
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
+
+    //Setting forceUpdate to false so cache doesn't clear unnecessarily
+    this.forceUpdate = false;
 
     // Return a response with status 200 and JSON as type
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
@@ -77,6 +81,10 @@ public class ProductEndpoints {
 
     // Return the data to the user
     if (createdProduct != null) {
+
+      //Setting forceUpdate to true, so cache clears when a user is created
+      forceUpdate = true;
+
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
