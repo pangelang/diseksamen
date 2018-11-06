@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import model.User;
 import utils.Config;
 
 public class DatabaseController {
@@ -109,5 +111,23 @@ public class DatabaseController {
 
     // Return the resultset which at this point will be null
     return result;
+  }
+
+  public boolean update (String sql) {
+
+    if (connection == null)
+      connection = getConnection();
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      int rowaffected = preparedStatement.executeUpdate();
+
+      return rowaffected == 1;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return false;
   }
 }

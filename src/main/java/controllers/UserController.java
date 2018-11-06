@@ -1,5 +1,6 @@
 package controllers;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class UserController {
     // Insert the user in the DB
     // TODO: Hash the user password before saving it.: FIX
 
-    String hashedPw = Hashing.md5(user.getPassword());
+    String hashedPw = Hashing.sha(user.getPassword());
     user.setPassword(hashedPw);
 
     int userID = dbCon.insert(
@@ -136,5 +137,27 @@ public class UserController {
 
     // Return user
     return user;
+  }
+
+  public static boolean updateUser (User user) {
+
+    Log.writeLog(UserController.class.getName(), user, "Actually updating a user in DB", 0);
+
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    String newPw = Hashing.sha(user.getPassword());
+    user.setPassword(newPw);
+
+    boolean affected = dbCon.update(
+            "UPDATE user SET " +
+            "first_name = " + "'" + user.getFirstname() + "'," +
+            "last_name = " + "'" + user.getLastname() + "'," +
+            "password = " + "'" + user.getPassword() + "'," +
+            "email = " + "'" + user.getEmail() + "'" +
+            "WHERE id = " + "'" + user.getId() + "'");
+
+    return affected;
   }
 }
