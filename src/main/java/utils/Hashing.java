@@ -6,9 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
-
-  private static String salt = "dryssermedsalt";
-
+  
   // TODO: You should add a salt and make this secure: FIX
   public static String md5(String rawString) {
     try {
@@ -17,7 +15,7 @@ public final class Hashing {
       MessageDigest md = MessageDigest.getInstance("MD5");
 
       //Adding salt
-      md.update(salt.getBytes());
+      md.update(Config.getSalt().getBytes());
 
       // We convert to byte array
       byte[] byteArray = md.digest(rawString.getBytes());
@@ -49,7 +47,7 @@ public final class Hashing {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
       //Adding salt
-      digest.update(salt.getBytes());
+      digest.update(Config.getSalt().getBytes());
 
       // We convert to byte array
       byte[] hash = digest.digest(rawString.getBytes(StandardCharsets.UTF_8));

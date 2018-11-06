@@ -23,6 +23,7 @@ public final class Config {
   private static long ORDER_TTL;
   private static long USER_TTL;
   private static char[] ENC_KEY;
+  private static String SALT;
 
   public static long getProductTtl() {
     return PRODUCT_TTL;
@@ -80,6 +81,10 @@ public final class Config {
     return ENC_KEY;
   }
 
+  public static String getSalt() {
+    return SALT;
+  }
+
   public static void initializeConfig() throws IOException {
 
     // Init variables to parse JSON
@@ -117,5 +122,6 @@ public final class Config {
     ORDER_TTL = json.get("ORDER_TTL").getAsLong();
     USER_TTL = json.get("USER_TTL").getAsLong();
     ENC_KEY = json.get("ENC_KEY").toString().toCharArray();
+    SALT = json.get("SALT").toString();
   }
 }
