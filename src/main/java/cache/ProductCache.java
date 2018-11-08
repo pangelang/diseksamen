@@ -32,6 +32,8 @@ public class ProductCache {
       // Get products from controller, since we wish to update.
       ArrayList<Product> products = ProductController.getProducts();
 
+      System.out.println("Testing cache");
+
       // Set products for the instance and set created timestamp
       this.products = products;
       this.created = System.currentTimeMillis() / 1000L;

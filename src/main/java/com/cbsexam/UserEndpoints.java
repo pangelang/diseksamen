@@ -101,10 +101,19 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
+  public Response loginUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    User user = new Gson().fromJson(body, User.class);
+
+    User userToLogin = UserController.login(user);
+
+    String json = new Gson().toJson(userToLogin);
+
+    if (userToLogin != null) {
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    } else {
+      return Response.status(400).entity("Could not find user").build();
+    }
   }
 
   // TODO: Make the system able to delete users
@@ -114,7 +123,7 @@ public class UserEndpoints {
     return Response.status(400).entity("Endpoint not implemented yet").build();
   }
 
-  // TODO: Make the system able to update users
+  // TODO: Make the system able to update users: FIX
   @PUT
   @Path("/update/{idUser}")
   @Consumes(MediaType.APPLICATION_JSON)

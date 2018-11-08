@@ -4,6 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import com.cbsexam.UserEndpoints;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -111,8 +114,7 @@ public class UserController {
     // Insert the user in the DB
     // TODO: Hash the user password before saving it.: FIX
 
-    String hashedPw = Hashing.sha(user.getPassword());
-    user.setPassword(hashedPw);
+    user.setPassword(Hashing.sha(user.getPassword()));
 
     int userID = dbCon.insert(
         "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
@@ -147,8 +149,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    String newPw = Hashing.sha(user.getPassword());
-    user.setPassword(newPw);
+    user.setPassword(Hashing.sha(user.getPassword()));
 
     boolean affected = dbCon.update(
             "UPDATE user SET " +
@@ -159,5 +160,41 @@ public class UserController {
             "WHERE id = " + "'" + user.getId() + "'");
 
     return affected;
+  }
+
+  public static User login(User user) {
+
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    user.setPassword(Hashing.sha(user.getPassword()));
+
+    try {
+
+      String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+
+      PreparedStatement preparedStatement = dbCon.getConnection().prepareStatement(sql);
+      preparedStatement.setString(1, user.getEmail());
+      preparedStatement.setString(2, user.getPassword());
+
+      ResultSet rs = dbCon.query(sql);
+
+      if (rs.next()) {
+        user =
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
+        return user;
+      } else {
+        System.out.println("No user found");
+      }
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    return null;
   }
 }
