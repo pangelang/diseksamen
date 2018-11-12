@@ -1,7 +1,5 @@
 package model;
 
-import utils.Hashing;
-
 public class User {
 
   public int id;
@@ -10,6 +8,7 @@ public class User {
   public String email;
   private String password;
   private long createdTime;
+  private String token;
 
   public User(int id, String firstname, String lastname, String password, String email) {
     this.id = id;
@@ -17,6 +16,15 @@ public class User {
     this.lastname = lastname;
     this.password = password;
     this.email = email;
+  }
+
+  public User(int id, String firstname, String lastname, String password, String email, String token) {
+    this.id = id;
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.password = password;
+    this.email = email;
+    this.token = token;
   }
 
   public int getId() {
@@ -65,5 +73,13 @@ public class User {
 
   public void setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

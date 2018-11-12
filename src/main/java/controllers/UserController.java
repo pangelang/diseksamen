@@ -4,12 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-import com.cbsexam.UserEndpoints;
 import model.User;
 import utils.Hashing;
 import utils.Log;
+import utils.Token;
 
 public class UserController {
 
@@ -178,7 +176,7 @@ public class UserController {
       preparedStatement.setString(1, user.getEmail());
       preparedStatement.setString(2, user.getPassword());
 
-      ResultSet rs = dbCon.query(sql);
+      ResultSet rs = preparedStatement.executeQuery();
 
       if (rs.next()) {
         user =
@@ -188,6 +186,10 @@ public class UserController {
                         rs.getString("last_name"),
                         rs.getString("password"),
                         rs.getString("email"));
+
+        user.setToken(Token.createToken());
+
+        System.out.println("Logged on");
         return user;
       } else {
         System.out.println("No user found");
