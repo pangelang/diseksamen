@@ -16,6 +16,7 @@ public class UserEndpoints {
 
   private static UserCache userCache = new UserCache();
   private static boolean forceUpdate = true;
+  private static User currentUser = new User();
 
   /**
    * @param idUser
@@ -110,17 +111,37 @@ public class UserEndpoints {
     String json = new Gson().toJson(userToLogin);
 
     if (userToLogin != null) {
+      currentUser = userToLogin;
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
       return Response.status(400).entity("Could not find user").build();
     }
   }
 
-  // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
+  // TODO: Make the system able to delete users: FIX
+  @DELETE
+  @Path("/{idUser}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response deleteUser(@PathParam("idUser") int idUser) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    if (currentUser.getToken() != null && currentUser.getId()==idUser) {
+      // Write to log that we are here
+      Log.writeLog(this.getClass().getName(), this, "Deleting a user", 0);
+
+      // Use the ID to delete the user from the database via controller.
+      boolean deleted = UserController.deleteUser(idUser);
+
+      if (deleted) {
+        forceUpdate = true;
+        // Return a response with status 200 and JSON as type
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("User deleted").build();
+      } else {
+        // Return a response with status 200 and JSON as type
+        return Response.status(400).entity("Could not delete user").build();
+      }
+    } else {
+      return Response.status(400).entity("You're not logged in as the right user").build();
+    }
   }
 
   // TODO: Make the system able to update users: FIX

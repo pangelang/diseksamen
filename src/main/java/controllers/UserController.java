@@ -199,4 +199,17 @@ public class UserController {
     }
     return null;
   }
+
+  public static boolean deleteUser(int idUser) {
+
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    String sql = "DELETE FROM user WHERE id = " + idUser;
+
+    boolean deleted = dbCon.delete(sql);
+
+    return deleted;
+  }
 }
