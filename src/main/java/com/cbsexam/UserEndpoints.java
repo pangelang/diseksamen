@@ -150,15 +150,19 @@ public class UserEndpoints {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateUser(@PathParam("idUser") int idUser, String body) {
 
-    User userToUpdate = new Gson().fromJson(body, User.class);
+    if (currentUser.getToken() != null && currentUser.getId()==idUser) {
+      User userToUpdate = new Gson().fromJson(body, User.class);
 
-    boolean affected = UserController.updateUser(userToUpdate);
+      boolean affected = UserController.updateUser(userToUpdate);
 
-    if (affected) {
-      String json = new Gson().toJson(userToUpdate);
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+      if (affected) {
+        String json = new Gson().toJson(userToUpdate);
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+      } else {
+        return Response.status(400).entity("Could not update user").build();
+      }
     } else {
-      return Response.status(400).entity("Could not update user").build();
+      return Response.status(400).entity("You're not logged in as the right user").build();
     }
   }
 }
