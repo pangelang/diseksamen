@@ -12,9 +12,11 @@ import utils.Token;
 public class UserController {
 
   private static DatabaseController dbCon;
+  private static User currentUser;
 
   public UserController() {
     dbCon = new DatabaseController();
+    currentUser = new User();
   }
 
   public static User getUser(int id) {
@@ -188,6 +190,7 @@ public class UserController {
                         rs.getString("email"));
 
         user.setToken(Token.createToken());
+        currentUser = user;
 
         System.out.println("Logged on");
         return user;
@@ -202,14 +205,18 @@ public class UserController {
 
   public static boolean deleteUser(int idUser) {
 
-    if (dbCon == null) {
+    if (Token.verifyToken(currentUser.getToken()) != null && currentUser.getId() == idUser) {
+
+      if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    String sql = "DELETE FROM user WHERE id = " + idUser;
+      String sql = "DELETE FROM user WHERE id = " + idUser;
 
-    boolean deleted = dbCon.delete(sql);
+      boolean deleted = dbCon.delete(sql);
 
-    return deleted;
+      return deleted;
+    }
+    return false;
   }
 }
