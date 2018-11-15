@@ -6,14 +6,17 @@ import java.util.ArrayList;
 
 import cache.ProductCache;
 import model.Product;
+import model.User;
 import utils.Log;
 
 public class ProductController {
 
   private static DatabaseController dbCon;
+  private static UserController userController;
 
   public ProductController() {
     dbCon = new DatabaseController();
+    userController = new UserController();
   }
 
   public static Product getProduct(int id) {

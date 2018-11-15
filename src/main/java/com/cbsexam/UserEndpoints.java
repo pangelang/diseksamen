@@ -16,7 +16,6 @@ public class UserEndpoints {
 
   private static UserCache userCache = new UserCache();
   private static boolean forceUpdate = true;
-  private static User currentUser = new User();
 
   /**
    * @param idUser
@@ -111,7 +110,6 @@ public class UserEndpoints {
     String json = new Gson().toJson(userToLogin);
 
     if (userToLogin != null) {
-      currentUser = userToLogin;
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
       return Response.status(400).entity("Could not find user").build();

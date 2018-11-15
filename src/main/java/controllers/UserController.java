@@ -192,8 +192,11 @@ public class UserController {
         user.setToken(Token.createToken());
         currentUser = user;
 
-        System.out.println("Logged on");
-        return user;
+
+        System.out.println("Logged in");
+
+        return currentUser;
+
       } else {
         System.out.println("No user found");
       }
@@ -205,7 +208,7 @@ public class UserController {
 
   public static boolean deleteUser(int idUser) {
 
-    if (Token.verifyToken(currentUser.getToken()) != null && currentUser.getId() == idUser) {
+    if (currentUser != null && Token.verifyToken(currentUser.getToken()) != null && idUser == currentUser.getId()) {
 
       if (dbCon == null) {
       dbCon = new DatabaseController();
@@ -218,5 +221,9 @@ public class UserController {
       return deleted;
     }
     return false;
+  }
+
+  public static User getCurrentUser() {
+    return currentUser;
   }
 }

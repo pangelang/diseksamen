@@ -17,7 +17,7 @@ public final class Token {
         //Kilde: https://www.owasp.org/index.php/JSON_Web_Token_(JWT)_Cheat_Sheet_for_Java
         Calendar c = Calendar.getInstance();
         Date now = c.getTime();
-        c.add(Calendar.MINUTE, 1);
+        c.add(Calendar.MINUTE, 15);
         Date expirationDate = c.getTime();
 
         return expirationDate;
@@ -35,7 +35,6 @@ public final class Token {
                     .sign(algorithm);
 
             return token;
-
         } catch (JWTCreationException exception) {
             //Invalid Signing configuration / Couldn't convert Claims.
         }
