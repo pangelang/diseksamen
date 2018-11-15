@@ -12,11 +12,9 @@ import utils.Log;
 public class OrderController {
 
   private static DatabaseController dbCon;
-  private static UserController userController;
 
   public OrderController() {
     dbCon = new DatabaseController();
-    userController = new UserController();
   }
 
   public static Order getOrder(int id) {

@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import model.User;
 import utils.Encryption;
 import utils.Log;
+import utils.Token;
 
 @Path("user")
 public class UserEndpoints {
@@ -107,10 +108,10 @@ public class UserEndpoints {
 
     User userToLogin = UserController.login(user);
 
-    String json = new Gson().toJson(userToLogin);
-
     if (userToLogin != null) {
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+      String msg = "You have succesfully logged in, " + userToLogin.getFirstname() +". This is your token, please save"
+              + " it:\n\n" + userToLogin.getToken() + "\n\nEnjoy your stay :-)";
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(msg).build();
     } else {
       return Response.status(400).entity("Could not find user").build();
     }
@@ -120,13 +121,15 @@ public class UserEndpoints {
   @DELETE
   @Path("/{idUser}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response deleteUser(@PathParam("idUser") int idUser) {
+  public Response deleteUser(@PathParam("idUser") int idUser, String body) {
+
+    Token token = new Gson().fromJson(body, Token.class);
 
     // Write to log that we are here
     Log.writeLog(this.getClass().getName(), this, "Deleting a user", 0);
 
     // Use the ID to delete the user from the database via controller.
-    boolean deleted = UserController.deleteUser(idUser);
+    boolean deleted = UserController.deleteUser(idUser, token);
 
     if (deleted) {
       forceUpdate = true;
