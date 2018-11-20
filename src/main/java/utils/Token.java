@@ -17,11 +17,9 @@ import java.util.Date;
 public final class Token {
 
     private String token;
-    private static ArrayList<String> tokens;
 
     public Token(String token){
         this.token = token;
-        this.tokens = new ArrayList<>();
     }
 
     private static Date expirationDate() {
@@ -45,8 +43,6 @@ public final class Token {
                     //.withIssuedAt(now)
                     //.withNotBefore(now)
                     .sign(algorithm);
-
-            tokens.add(token);
 
             return token;
 

@@ -139,25 +139,29 @@ public class UserController {
     return user;
   }
 
-  public static boolean updateUser (User user) {
+  public static boolean updateUser(User user, Token token, int idUser) {
 
-    Log.writeLog(UserController.class.getName(), user, "Actually updating a user in DB", 0);
+    if (Token.verifyToken(token.getToken(), idUser) != null) {
 
-    if (dbCon == null) {
-      dbCon = new DatabaseController();
+      Log.writeLog(UserController.class.getName(), user, "Actually updating a user in DB", 0);
+
+      if (dbCon == null) {
+        dbCon = new DatabaseController();
+      }
+
+      user.setPassword(Hashing.sha(user.getPassword()));
+
+      boolean affected = dbCon.update(
+              "UPDATE user SET " +
+                      "first_name = " + "'" + user.getFirstname() + "'," +
+                      "last_name = " + "'" + user.getLastname() + "'," +
+                      "password = " + "'" + user.getPassword() + "'," +
+                      "email = " + "'" + user.getEmail() + "'" +
+                      "WHERE id = " + "'" + user.getId() + "'");
+
+      return affected;
     }
-
-    user.setPassword(Hashing.sha(user.getPassword()));
-
-    boolean affected = dbCon.update(
-            "UPDATE user SET " +
-            "first_name = " + "'" + user.getFirstname() + "'," +
-            "last_name = " + "'" + user.getLastname() + "'," +
-            "password = " + "'" + user.getPassword() + "'," +
-            "email = " + "'" + user.getEmail() + "'" +
-            "WHERE id = " + "'" + user.getId() + "'");
-
-    return affected;
+    return false;
   }
 
   public static User login(User user) {
@@ -202,7 +206,7 @@ public class UserController {
     return null;
   }
 
-  public static boolean deleteUser(int idUser, Token token) {
+  public static boolean deleteUser(Token token, int idUser) {
 
     if (Token.verifyToken(token.getToken(), idUser) != null) {
 

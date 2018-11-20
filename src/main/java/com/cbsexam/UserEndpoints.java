@@ -129,7 +129,7 @@ public class UserEndpoints {
     Log.writeLog(this.getClass().getName(), this, "Deleting a user", 0);
 
     // Use the ID to delete the user from the database via controller.
-    boolean deleted = UserController.deleteUser(idUser, token);
+    boolean deleted = UserController.deleteUser(token, idUser);
 
     if (deleted) {
       forceUpdate = true;
@@ -147,9 +147,12 @@ public class UserEndpoints {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateUser(@PathParam("idUser") int idUser, String body) {
 
+    Token token = new Gson().fromJson(body, Token.class);
     User userToUpdate = new Gson().fromJson(body, User.class);
 
-    boolean affected = UserController.updateUser(userToUpdate);
+    Log.writeLog(this.getClass().getName(), this, "Updating a user", 0);
+
+    boolean affected = UserController.updateUser(userToUpdate, token, idUser);
 
     if (affected) {
       String json = new Gson().toJson(userToUpdate);

@@ -130,7 +130,7 @@ public class OrderController {
 
     //Kilde: https://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
     try {
-      //setting AutoCommit to false
+      //Setting AutoCommit to false
       dbCon.getConnection().setAutoCommit(false);
 
       // Save addresses to database and save them back to initial order instance
