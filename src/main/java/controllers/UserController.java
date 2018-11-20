@@ -139,9 +139,7 @@ public class UserController {
     return user;
   }
 
-  public static boolean updateUser(User user, Token token, int idUser) {
-
-    if (Token.verifyToken(token.getToken(), idUser) != null) {
+  public static boolean updateUser(User user) {
 
       Log.writeLog(UserController.class.getName(), user, "Actually updating a user in DB", 0);
 
@@ -160,8 +158,6 @@ public class UserController {
                       "WHERE id = " + "'" + user.getId() + "'");
 
       return affected;
-    }
-    return false;
   }
 
   public static User login(User user) {
@@ -206,20 +202,16 @@ public class UserController {
     return null;
   }
 
-  public static boolean deleteUser(Token token, int idUser) {
+  public static boolean deleteUser(int idUser) {
 
-    if (Token.verifyToken(token.getToken(), idUser) != null) {
-
-      if (dbCon == null) {
-        dbCon = new DatabaseController();
-      }
-
-      String sql = "DELETE FROM user WHERE id = " + idUser;
-
-      boolean deleted = dbCon.delete(sql);
-
-      return deleted;
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
     }
-    return false;
+
+    String sql = "DELETE FROM user WHERE id = " + idUser;
+
+    boolean deleted = dbCon.delete(sql);
+
+    return deleted;
   }
 }

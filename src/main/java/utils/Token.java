@@ -16,66 +16,39 @@ import java.util.Date;
 
 public final class Token {
 
-    private String token;
-
-    public Token(String token){
-        this.token = token;
-    }
-
-    private static Date expirationDate() {
-        //Kilde: https://www.owasp.org/index.php/JSON_Web_Token_(JWT)_Cheat_Sheet_for_Java
-        Calendar c = Calendar.getInstance();
-        Date now = c.getTime();
-        c.add(Calendar.MINUTE, 15);
-        Date expirationDate = c.getTime();
-
-        return expirationDate;
-    }
-
     public static String createToken(User user) {
 
         try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
             String token = JWT.create()
                     .withIssuer("auth0")
-                    .withExpiresAt(expirationDate())
-                    .withClaim("sub", user.getId())
-                    //.withIssuedAt(now)
-                    //.withNotBefore(now)
+                    .withIssuedAt(new Date (System.currentTimeMillis()))
+                    .withExpiresAt(new Date (System.currentTimeMillis() + 900000)) //15 min. duration
+                    .withSubject(Integer.toString(user.getId()))
                     .sign(algorithm);
 
             return token;
 
         } catch (JWTCreationException exception) {
-            //Invalid Signing configuration / Couldn't convert Claims.
         }
         return null;
     }
 
-    public static DecodedJWT verifyToken(String token, int idUser) {
+    public static boolean verifyToken(String token, User user) {
 
         try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("auth0")
-                    .build(); //Reusable verifier instance
-            DecodedJWT jwt = verifier.verify(token);
+                    .withSubject(Integer.toString(user.getId()))
+                    .build();
 
-            String check = new Gson().toJson(jwt);
+            verifier.verify(token);
 
-            if (check.contains("\"subject\":\"" + idUser + "\"")) {
+            return true;
 
-                return jwt;
-            }
-
-        } catch (JWTVerificationException exception){
-            //Invalid signature/claims
+        } catch (JWTVerificationException exception) {
         }
-        return null;
+        return false;
     }
-
-    public String getToken() {
-        return token;
-    }
-
 }
