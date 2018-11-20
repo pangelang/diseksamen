@@ -93,12 +93,17 @@ public class DatabaseController {
       connection = getConnection();
 
     try {
+
+      connection.setAutoCommit(false);
+
       // Build the statement up in a safe way
       PreparedStatement statement =
           connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
       // Execute query
       result = statement.executeUpdate();
+
+      connection.commit();
 
       // Get our key back in order to update the user
       ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -107,6 +112,18 @@ public class DatabaseController {
       }
     } catch (SQLException e) {
       System.out.println(e.getMessage());
+      try {
+        connection.rollback();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+    finally {
+      try {
+        connection.setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
     }
 
     // Return the resultset which at this point will be null

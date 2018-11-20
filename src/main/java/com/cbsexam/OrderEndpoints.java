@@ -84,7 +84,7 @@ public class OrderEndpoints {
     // Return the data to the user
     if (createdOrder != null) {
 
-      //Setting forceUpdate to true, so cache clears when a user is created
+      //Setting forceUpdate to true, so cache clears when a order is created
       forceUpdate = true;
 
       // Return a response with status 200 and JSON as type
