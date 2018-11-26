@@ -133,9 +133,10 @@ public class OrderController {
     order.setShippingAddress(AddressController.createAddress(order.getShippingAddress()));
 
     // Save the user to the database and save them back to initial order instance
-    order.setCustomer(UserController.createUser(order.getCustomer()));
+    //order.setCustomer(UserController.createUser(order.getCustomer()));
+    order.setCustomer(UserController.getUser(order.getCustomer().getId()));
 
-    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.: FIX
+    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.: FIX (see DatabaseController)
 
     // Insert the product in the DB
     int orderID = dbCon.insert(
