@@ -19,7 +19,7 @@ public final class Token {
     public static String createToken(User user) {
 
         try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
+            Algorithm algorithm = Algorithm.HMAC256(Config.getSecret());
             String token = JWT.create()
                     .withIssuer("auth0")
                     .withIssuedAt(new Date (System.currentTimeMillis()))
@@ -37,7 +37,7 @@ public final class Token {
     public static boolean verifyToken(String token, User user) {
 
         try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
+            Algorithm algorithm = Algorithm.HMAC256(Config.getSecret());
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("auth0")
                     .withSubject(Integer.toString(user.getId()))

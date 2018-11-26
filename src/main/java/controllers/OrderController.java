@@ -285,7 +285,7 @@ public class OrderController {
 
     // Insert the product in the DB
     int orderID = dbCon.insert(
-            "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
+            "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, order_created_at, order_updated_at) VALUES("
                     + order.getCustomer().getId()
                     + ", "
                     + order.getBillingAddress().getId()

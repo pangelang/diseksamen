@@ -24,6 +24,11 @@ public final class Config {
   private static long USER_TTL;
   private static char[] ENC_KEY;
   private static String SALT;
+  private static String SECRET;
+
+  public static String getSecret() {
+    return SECRET;
+  }
 
   public static long getProductTtl() {
     return PRODUCT_TTL;
@@ -123,5 +128,6 @@ public final class Config {
     USER_TTL = json.get("USER_TTL").getAsLong();
     ENC_KEY = json.get("ENC_KEY").toString().toCharArray();
     SALT = json.get("SALT").toString();
+    SECRET = json.get("SECRET").toString();
   }
 }

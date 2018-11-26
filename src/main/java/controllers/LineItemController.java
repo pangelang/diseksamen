@@ -43,7 +43,7 @@ public class LineItemController {
                 rs.getInt("l_id"),
                 product,
                 rs.getInt("quantity"),
-                rs.getFloat("price"));
+                rs.getFloat("l_price"));
 
         // Add it to our list of items and return it
         items.add(lineItem);
@@ -73,7 +73,7 @@ public class LineItemController {
 
     // Insert the product in the DB
     int lineItemID = dbCon.insert(
-        "INSERT INTO line_item(product_id, order_id, price, quantity) VALUES("
+        "INSERT INTO line_item(product_id, order_id, l_price, quantity) VALUES("
             + lineItem.getProduct().getId()
             + ", "
             + orderID
