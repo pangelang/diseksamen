@@ -25,7 +25,7 @@ public class ProductController {
     }
 
     // Build the SQL query for the DB
-    String sql = "SELECT * FROM product where id=" + id;
+    String sql = "SELECT * FROM product where p_id=" + id;
 
     // Run the query in the DB and make an empty object to return
     ResultSet rs = dbCon.query(sql);
@@ -36,7 +36,7 @@ public class ProductController {
       if (rs.next()) {
         product =
             new Product(
-                rs.getInt("id"),
+                rs.getInt("p_id"),
                 rs.getString("product_name"),
                 rs.getString("sku"),
                 rs.getFloat("price"),
@@ -71,7 +71,7 @@ public class ProductController {
       if (rs.next()) {
         product =
             new Product(
-                rs.getInt("id"),
+                rs.getInt("p_id"),
                 rs.getString("product_name"),
                 rs.getString("sku"),
                 rs.getFloat("price"),
@@ -111,7 +111,7 @@ public class ProductController {
         while (rs.next()) {
           Product product =
                   new Product(
-                          rs.getInt("id"),
+                          rs.getInt("p_id"),
                           rs.getString("product_name"),
                           rs.getString("sku"),
                           rs.getFloat("price"),

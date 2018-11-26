@@ -21,7 +21,7 @@ public class AddressController {
     }
 
     // Our SQL string
-    String sql = "SELECT * FROM address where id=" + id;
+    String sql = "SELECT * FROM address where a_id=" + id;
 
     // Do the query and set the initial value to null
     ResultSet rs = dbCon.query(sql);
@@ -32,7 +32,7 @@ public class AddressController {
       if (rs.next()) {
         address =
             new Address(
-                rs.getInt("id"),
+                rs.getInt("a_id"),
                 rs.getString("name"),
                 rs.getString("street_address"),
                 rs.getString("city"),

@@ -51,6 +51,23 @@ public class Order {
     this.updatedAt = updatedAt;
   }
 
+  public Order(
+          int id,
+          User customer,
+          ArrayList<LineItem> lineItems,
+          Address billingAddress,
+          float orderTotal,
+          long createdAt,
+          long updatedAt) {
+    this.id = id;
+    this.customer = customer;
+    this.lineItems = lineItems;
+    this.billingAddress = billingAddress;
+    this.orderTotal = orderTotal;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
+
   public int getId() {
     return id;
   }

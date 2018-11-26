@@ -34,6 +34,8 @@ public class OrderCache {
             // Get orders from controller, since we wish to update.
             ArrayList<Order> orders = OrderController.getOrders();
 
+            System.out.println("Test");
+
             // Set orders for the instance and set created timestamp
             this.orders = orders;
             this.created = System.currentTimeMillis() / 1000L;
@@ -41,5 +43,24 @@ public class OrderCache {
 
         // Return the documents
         return this.orders;
+    }
+
+    public Order getOrder(Boolean forceUpdate, int idOrder) {
+
+        Order order = new Order();
+
+        if (forceUpdate) {
+            order = OrderController.getOrder(idOrder);
+
+            return order;
+        } else {
+            for (Order o : orders) {
+                if (idOrder == order.getId()) {
+                    order = o;
+                    return order;
+                }
+            }
+        }
+        return null;
     }
 }

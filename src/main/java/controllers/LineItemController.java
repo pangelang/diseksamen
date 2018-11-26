@@ -40,7 +40,7 @@ public class LineItemController {
         // Initialize an instance of the line item object
         LineItem lineItem =
             new LineItem(
-                rs.getInt("id"),
+                rs.getInt("l_id"),
                 product,
                 rs.getInt("quantity"),
                 rs.getFloat("price"));

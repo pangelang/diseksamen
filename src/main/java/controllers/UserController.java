@@ -25,7 +25,7 @@ public class UserController {
     }
 
     // Build the query for DB
-    String sql = "SELECT * FROM user where id=" + id;
+    String sql = "SELECT * FROM user where u_id=" + id;
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
@@ -36,7 +36,7 @@ public class UserController {
       if (rs.next()) {
         user =
             new User(
-                rs.getInt("id"),
+                rs.getInt("u_id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("password"),
@@ -79,7 +79,7 @@ public class UserController {
       while (rs.next()) {
         User user =
             new User(
-                rs.getInt("id"),
+                rs.getInt("u_id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("password"),
@@ -155,7 +155,7 @@ public class UserController {
                       "last_name = " + "'" + user.getLastname() + "'," +
                       "password = " + "'" + user.getPassword() + "'," +
                       "email = " + "'" + user.getEmail() + "'" +
-                      "WHERE id = " + "'" + user.getId() + "'");
+                      "WHERE u_id = " + "'" + user.getId() + "'");
 
       return affected;
   }
@@ -181,7 +181,7 @@ public class UserController {
       if (rs.next()) {
         user =
                 new User(
-                        rs.getInt("id"),
+                        rs.getInt("u_id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("password"),
@@ -208,7 +208,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "DELETE FROM user WHERE id = " + idUser;
+    String sql = "DELETE FROM user WHERE u_id = " + idUser;
 
     boolean deleted = dbCon.delete(sql);
 
