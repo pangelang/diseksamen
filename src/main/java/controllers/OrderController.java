@@ -23,17 +23,13 @@ public class OrderController {
     }
 
     // Build SQL string to query
-    String sql = "select *\n" +
-            "from address\n" +
-            "left join orders on address.a_id=orders.billing_address_id\n" +
-            "\n" +
-            "left join user on orders.user_id = user.u_id\n" +
-            "\n" +
-            "left join line_item on line_item.order_id = orders.o_id\n" +
-            "\n" +
-            "left join product on product.p_id = line_item.product_id\n" +
-            "\n" +
-            "order by address.a_id\n";
+    String sql = "SELECT * " +
+            "FROM address " +
+            "LEFT JOIN orders ON address.a_id = orders.billing_address_id " +
+            "LEFT JOIN user ON orders.user_id = user.u_id " +
+            "LEFT JOIN line_item ON line_item.order_id = orders.o_id " +
+            "LEFT JOIN product ON product.p_id = line_item.product_id " +
+            "ORDER BY address.a_id";
 
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
@@ -41,13 +37,12 @@ public class OrderController {
 
     try {
       while (rs.next()) {
-        System.out.println(rs.getRow());
         User user;
         LineItem lineItem;
         Address billingsAddress;
         Address shippingAddress;
         Product product;
-        ArrayList <LineItem> lineItemsList;
+        ArrayList <LineItem> lineItemsList = new ArrayList<>();
 
         if (id==rs.getInt("o_id")){
 
@@ -68,7 +63,6 @@ public class OrderController {
             lineItem = new LineItem(rs.getInt("l_id"), product,
                     rs.getInt("quantity"),
                     rs.getFloat("l_price"));
-            lineItemsList = new ArrayList<>();
             lineItemsList.add(lineItem);
 
             billingsAddress = new Address(rs.getInt("a_id"),
@@ -118,20 +112,16 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "select orders.*, address.*, line_item.*, product.*, user.*\n" +
-            "from address\n" +
-            "left join orders on address.a_id=orders.billing_address_id\n" +
-            "\n" +
-            "left join user on orders.user_id = user.u_id\n" +
-            "\n" +
-            "left join line_item on line_item.order_id = orders.o_id\n" +
-            "\n" +
-            "left join product on product.p_id = line_item.product_id\n" +
-            "\n" +
-            "order by address.a_id\n";
+    String sql = "SELECT * " +
+            "FROM address " +
+            "LEFT JOIN orders ON address.a_id = orders.billing_address_id " +
+            "LEFT JOIN user ON orders.user_id = user.u_id " +
+            "LEFT JOIN line_item ON line_item.order_id = orders.o_id " +
+            "LEFT JOIN product ON product.p_id = line_item.product_id " +
+            "ORDER BY address.a_id";
 
     ResultSet rs = dbCon.query(sql);
-    ArrayList<Order> orders = new ArrayList<Order>();
+    ArrayList<Order> orders = new ArrayList<>();
 
     try {
       while(rs.next()) {
@@ -140,7 +130,7 @@ public class OrderController {
         Address billingsAddress;
         Address shippingAddress;
         Product product;
-        ArrayList <LineItem> lineItemsList = new ArrayList<LineItem>();
+        ArrayList <LineItem> lineItemsList = new ArrayList<>();
 
         if(orders.isEmpty()){
           user = new User(rs.getInt("u_id"),
