@@ -25,7 +25,7 @@ public class UserController {
     }
 
     // Build the query for DB
-    String sql = "SELECT * FROM user where u_id=" + id;
+    String sql = "SELECT * FROM user where u_id = " + id;
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);

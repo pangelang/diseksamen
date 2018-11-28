@@ -25,24 +25,27 @@ public class DatabaseController {
    */
   public static Connection getConnection() {
     try {
-      // Set the dataabase connect with the data from the config
-      String url =
-          "jdbc:mysql://"
-              + Config.getDatabaseHost()
-              + ":"
-              + Config.getDatabasePort()
-              + "/"
-              + Config.getDatabaseName()
-              + "?serverTimezone=CET";
 
-      String user = Config.getDatabaseUsername();
-      String password = Config.getDatabasePassword();
+      if (connection == null) {
+        // Set the dataabase connect with the data from the config
+        String url =
+                "jdbc:mysql://"
+                        + Config.getDatabaseHost()
+                        + ":"
+                        + Config.getDatabasePort()
+                        + "/"
+                        + Config.getDatabaseName()
+                        + "?serverTimezone=CET";
 
-      // Register the driver in order to use it
-      DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+        String user = Config.getDatabaseUsername();
+        String password = Config.getDatabasePassword();
 
-      // create a connection to the database
-      connection = DriverManager.getConnection(url, user, password);
+        // Register the driver in order to use it
+        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+
+        // create a connection to the database
+        connection = DriverManager.getConnection(url, user, password);
+      }
 
     } catch (SQLException e) {
       System.out.println(e.getMessage());
@@ -93,17 +96,12 @@ public class DatabaseController {
       connection = getConnection();
 
     try {
-
-      connection.setAutoCommit(false);
-
       // Build the statement up in a safe way
       PreparedStatement statement =
-          connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+              connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
       // Execute query
       result = statement.executeUpdate();
-
-      connection.commit();
 
       // Get our key back in order to update the user
       ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -112,20 +110,7 @@ public class DatabaseController {
       }
     } catch (SQLException e) {
       System.out.println(e.getMessage());
-      try {
-        connection.rollback();
-      } catch (SQLException ex) {
-        ex.printStackTrace();
-      }
     }
-    finally {
-      try {
-        connection.setAutoCommit(true);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-    }
-
     // Return the resultset which at this point will be null
     return result;
   }
