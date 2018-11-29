@@ -167,4 +167,20 @@ public class ProductController {
     // Return product
     return product;
   }
+
+  public static Product formProduct(ResultSet rs) {
+    try {
+        Product product = new Product(rs.getInt("p_id"),
+                rs.getString("product_name"),
+                rs.getString("sku"),
+                rs.getFloat("price"),
+                rs.getString("description"),
+                rs.getInt("stock"));
+
+      return product;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

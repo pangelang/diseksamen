@@ -75,7 +75,7 @@ public class AddressController {
             + "')");
 
     if (addressID != 0) {
-      //Update the productid of the product before returning
+      // Update the productid of the product before returning
       address.setId(addressID);
     } else{
       // Return null if product has not been inserted into database
@@ -84,6 +84,21 @@ public class AddressController {
 
     // Return product, will be null at this point
     return address;
+  }
+
+  public static Address formAddress(ResultSet rs) {
+    try {
+      Address address = new Address(rs.getInt("a_id"),
+              rs.getString("name"),
+              rs.getString("street_address"),
+              rs.getString("city"),
+              rs.getString("zipcode"));
+
+      return address;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
   
 }

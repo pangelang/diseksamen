@@ -2,7 +2,6 @@ package controllers;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 
 import model.*;
@@ -45,55 +44,24 @@ public class OrderController {
         Product product;
         ArrayList <LineItem> lineItemsList = new ArrayList<>();
 
-        if (id==rs.getInt("o_id")){
+        if (id == rs.getInt("o_id")){
 
-          if (order==null) {
-            user = new User(rs.getInt("u_id"),
-                    rs.getString("first_name"),
-                    rs.getString("last_name"),
-                    rs.getString("password"),
-                    rs.getString("email"));
-
-            product = new Product(rs.getInt("p_id"),
-                    rs.getString("product_name"),
-                    rs.getString("sku"),
-                    rs.getFloat("price"),
-                    rs.getString("description"),
-                    rs.getInt("stock"));
-
-            lineItem = new LineItem(rs.getInt("l_id"), product,
-                    rs.getInt("quantity"),
-                    rs.getFloat("l_price"));
+          if (order == null) {
+            user = UserController.formUser(rs);
+            product = ProductController.formProduct(rs);
+            lineItem = LineItemController.formLineItem(rs, product);
             lineItemsList.add(lineItem);
-
-            billingsAddress = new Address(rs.getInt("a_id"),
-                    rs.getString("name"),
-                    rs.getString("street_address"),
-                    rs.getString("city"),
-                    rs.getString("zipcode")
-            );
-
-            // Create an order from the database data
-            order = new Order(
-                    rs.getInt("o_id"),
-                    user,
-                    lineItemsList,
-                    billingsAddress,
-                    rs.getFloat("order_total"),
-                    rs.getLong("order_created_at"),
-                    rs.getLong("order_updated_at"));
+            billingsAddress = AddressController.formAddress(rs);
+            order = formOrder(rs, user, lineItemsList, billingsAddress);
           }
-        } else if (order!=null && rs.getInt("a_id")==order.getBillingAddress().getId()+1){
-          shippingAddress = new Address(rs.getInt("a_id"),
-                  rs.getString("name"),
-                  rs.getString("street_address"),
-                  rs.getString("city"),
-                  rs.getString("zipcode")
-          );
+
+        } else if (order != null && rs.getInt("a_id") == order.getBillingAddress().getId()+1){
+          shippingAddress = AddressController.formAddress(rs);
           order.setShippingAddress(shippingAddress);
           rs.afterLast();
         }
       }
+
       return order;
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -133,114 +101,37 @@ public class OrderController {
         Product product;
         ArrayList <LineItem> lineItemsList = new ArrayList<>();
 
-        if(orders.isEmpty()){
-          user = new User(rs.getInt("u_id"),
-                  rs.getString("first_name"),
-                  rs.getString("last_name"),
-                  rs.getString("password"),
-                  rs.getString("email"));
-
-          product = new Product(rs.getInt("p_id"),
-                  rs.getString("product_name"),
-                  rs.getString("sku"),
-                  rs.getFloat("price"),
-                  rs.getString("description"),
-                  rs.getInt("stock"));
-          //Product(int id, String name, String sku, float price, String description, int stock)
-
-          lineItem = new LineItem(rs.getInt("l_id"),product,
-                  rs.getInt("quantity"),
-                  rs.getFloat("l_price"));
+        //Creating order object if orders ArrayList is empty
+        if(orders.isEmpty()) {
+          user = UserController.formUser(rs);
+          product = ProductController.formProduct(rs);
+          lineItem = LineItemController.formLineItem(rs, product);
           lineItemsList.add(lineItem);
+          billingsAddress = AddressController.formAddress(rs);
+          orders.add(formOrder(rs, user, lineItemsList, billingsAddress));
 
-          billingsAddress = new Address(rs.getInt("a_id"),
-                  rs.getString("name"),
-                  rs.getString("street_address"),
-                  rs.getString("city"),
-                  rs.getString("zipcode")
-          );
-
-          // Create an order from the database data
-          Order order =
-                  new Order(
-                          rs.getInt("o_id"),
-                          user,
-                          lineItemsList,
-                          billingsAddress,
-                          rs.getFloat("order_total"),
-                          rs.getLong("order_created_at"),
-                          rs.getLong("order_updated_at"));
-
-          orders.add(order);
-
-        } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId()&& rs.getInt("o_id")!=0){
-          product = new Product(rs.getInt("p_id"),
-                  rs.getString("product_name"),
-                  rs.getString("sku"),
-                  rs.getFloat("price"),
-                  rs.getString("description"),
-                  rs.getInt("stock"));
-          //Product(int id, String name, String sku, float price, String description, int stock)
-
-          lineItem = new LineItem(rs.getInt("l_id"),product,
-                  rs.getInt("quantity"),
-                  rs.getFloat("l_price"));
+          //Adding product(s) to existing order if the order id (o_id) in the next line in the result set is the same
+          //as the previous
+        } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId() && rs.getInt("o_id") != 0) {
+          product = ProductController.formProduct(rs);
+          lineItem = LineItemController.formLineItem(rs, product);
           lineItemsList.add(lineItem);
-
           orders.get(orders.size()-1).getLineItems().add(lineItem);
 
-
-        } else if(rs.getInt("o_id")==0){
-
-          shippingAddress = new Address(rs.getInt("a_id"),
-                  rs.getString("name"),
-                  rs.getString("street_address"),
-                  rs.getString("city"),
-                  rs.getString("zipcode")
-          );
-
+          //If the order id in the result set is null, it means the cursor is at the line where the corresponding
+          //shipping address should be.
+        } else if(rs.getInt("o_id") == 0) {
+          shippingAddress = AddressController.formAddress(rs);
           orders.get(orders.size()-1).setShippingAddress(shippingAddress);
 
+          //Creating a new order object
         } else{
-
-          user = new User(rs.getInt("u_id"),
-                  rs.getString("first_name"),
-                  rs.getString("last_name"),
-                  rs.getString("password"),
-                  rs.getString("email"));
-
-          product = new Product(rs.getInt("p_id"),
-                  rs.getString("product_name"),
-                  rs.getString("sku"),
-                  rs.getFloat("price"),
-                  rs.getString("description"),
-                  rs.getInt("stock"));
-          //Product(int id, String name, String sku, float price, String description, int stock)
-
-          lineItem = new LineItem(rs.getInt("l_id"),product,
-                  rs.getInt("quantity"),
-                  rs.getFloat("l_price"));
+          user = UserController.formUser(rs);
+          product = ProductController.formProduct(rs);
+          lineItem = LineItemController.formLineItem(rs, product);
           lineItemsList.add(lineItem);
-
-          billingsAddress = new Address(rs.getInt("a_id"),
-                  rs.getString("name"),
-                  rs.getString("street_address"),
-                  rs.getString("city"),
-                  rs.getString("zipcode")
-          );
-
-          // Create an order from the database data
-          Order order =
-                  new Order(
-                          rs.getInt("o_id"),
-                          user,
-                          lineItemsList,
-                          billingsAddress,
-                          rs.getFloat("order_total"),
-                          rs.getLong("order_created_at"),
-                          rs.getLong("order_updated_at"));
-
-          orders.add(order);
+          billingsAddress = AddressController.formAddress(rs);
+          orders.add(formOrder(rs, user, lineItemsList, billingsAddress));
         }
       }
     } catch (SQLException ex) {
@@ -330,6 +221,24 @@ public class OrderController {
     }
     // Return order
     return order;
+  }
+
+  private static Order formOrder (ResultSet rs, User user, ArrayList<LineItem> lineItemsList, Address billingsAddress) {
+    try {
+      Order order = new Order(
+                      rs.getInt("o_id"),
+                      user,
+                      lineItemsList,
+                      billingsAddress,
+                      rs.getFloat("order_total"),
+                      rs.getLong("order_created_at"),
+                      rs.getLong("order_updated_at"));
+
+      return order;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
 }

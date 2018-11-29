@@ -214,4 +214,19 @@ public class UserController {
 
     return deleted;
   }
+
+  public static User formUser(ResultSet rs){
+    try{
+      User user = new User(rs.getInt("u_id"),
+              rs.getString("first_name"),
+              rs.getString("last_name"),
+              rs.getString("password"),
+              rs.getString("email"));
+
+      return user;
+    }catch(SQLException e){
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

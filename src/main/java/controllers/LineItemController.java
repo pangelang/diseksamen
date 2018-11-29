@@ -95,5 +95,18 @@ public class LineItemController {
     // Return product
     return lineItem;
   }
+
+  public static LineItem formLineItem (ResultSet rs, Product product) {
+    try {
+      LineItem lineItem = new LineItem(rs.getInt("l_id"),product,
+              rs.getInt("quantity"),
+              rs.getFloat("l_price"));
+
+      return lineItem;
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
   
 }
