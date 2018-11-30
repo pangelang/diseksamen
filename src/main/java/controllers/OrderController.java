@@ -15,56 +15,80 @@ public class OrderController {
     dbCon = new DatabaseController();
   }
 
-  public static Order getOrder(int id) {
+  public static Order getOrder(int orderId) {
+
+    Order order = null;
+    ArrayList <LineItem> lineItemsList = new ArrayList<>();
+    User user;
+    LineItem lineItem;
+    Address billingsAddress;
+    Product product;
+    Address shippingAddress;
 
     // check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Build SQL string to query
-    String sql = "SELECT * " +
-            "FROM address " +
-            "LEFT JOIN orders ON address.a_id = orders.billing_address_id " +
-            "LEFT JOIN user ON orders.user_id = user.u_id " +
-            "LEFT JOIN line_item ON line_item.order_id = orders.o_id " +
-            "LEFT JOIN product ON product.p_id = line_item.product_id " +
-            "ORDER BY address.a_id";
-
-    // Do the query in the database and create an empty object for the results
-    ResultSet rs = dbCon.query(sql);
-    Order order = null;
-
     try {
+      dbCon.getConnection().setAutoCommit(false);
+
+      // Build SQL string to query
+      String sql1 = "SELECT * " +
+              "FROM address " +
+              "LEFT JOIN orders ON address.a_id = orders.billing_address_id " +
+              "LEFT JOIN user ON orders.user_id = user.u_id " +
+              "LEFT JOIN line_item ON line_item.order_id = orders.o_id " +
+              "LEFT JOIN product ON product.p_id = line_item.product_id " +
+              "WHERE orders.o_id = " + orderId + " " +
+              "ORDER BY address.a_id";
+
+      // Do the query in the database
+      ResultSet rs = dbCon.query(sql1);
+
       while (rs.next()) {
-        User user;
-        LineItem lineItem;
-        Address billingsAddress;
-        Address shippingAddress;
-        Product product;
-        ArrayList <LineItem> lineItemsList = new ArrayList<>();
+        if (order==null) {
+          user = UserController.formUser(rs);
+          product = ProductController.formProduct(rs);
+          lineItem = LineItemController.formLineItem(rs, product);
+          lineItemsList.add(lineItem);
+          billingsAddress = AddressController.formAddress(rs);
+          order = formOrder(rs, user, lineItemsList, billingsAddress);
 
-        if (id == rs.getInt("o_id")){
-
-          if (order == null) {
-            user = UserController.formUser(rs);
-            product = ProductController.formProduct(rs);
-            lineItem = LineItemController.formLineItem(rs, product);
-            lineItemsList.add(lineItem);
-            billingsAddress = AddressController.formAddress(rs);
-            order = formOrder(rs, user, lineItemsList, billingsAddress);
-          }
-
-        } else if (order != null && rs.getInt("a_id") == order.getBillingAddress().getId()+1){
-          shippingAddress = AddressController.formAddress(rs);
-          order.setShippingAddress(shippingAddress);
-          rs.afterLast();
+        } else{
+          product = ProductController.formProduct(rs);
+          lineItem = LineItemController.formLineItem(rs, product);
+          order.getLineItems().add(lineItem);
         }
       }
 
+      //Making our second query
+      String sql2 = "SELECT * FROM address WHERE address.a_id = " + (order.getBillingAddress().getId()+1);
+      ResultSet rs2 = dbCon.query(sql2);
+
+      if (rs2.next()){
+        shippingAddress = AddressController.formAddress(rs2);
+        order.setShippingAddress(shippingAddress);
+      }
+
+      dbCon.getConnection().commit();
+
       return order;
-    } catch (SQLException ex) {
-      System.out.println(ex.getMessage());
+
+    } catch (SQLException | NullPointerException e) {
+      e.printStackTrace();
+      try {
+        System.out.println("Rollback");
+        dbCon.getConnection().rollback();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }finally {
+      try {
+        dbCon.getConnection().setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
     }
     // Returns null
     return order;
