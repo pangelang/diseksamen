@@ -15,47 +15,6 @@ public class LineItemController {
     dbCon = new DatabaseController();
   }
 
-  public static ArrayList<LineItem> getLineItemsForOrder(int orderID) {
-
-    // Check for DB Connection
-    if (dbCon == null) {
-      dbCon = new DatabaseController();
-    }
-
-    // Construct our SQL
-    String sql = "SELECT * FROM line_item where order_id=" + orderID;
-
-    // Do the query and initialize an empty list for the results
-    ResultSet rs = dbCon.query(sql);
-    ArrayList<LineItem> items = new ArrayList<>();
-
-    try {
-
-      // Loop through the results from the DB
-      while (rs.next()) {
-
-        // Construct a product base on the row data with product_id
-        Product product = ProductController.getProduct(rs.getInt("product_id"));
-
-        // Initialize an instance of the line item object
-        LineItem lineItem =
-            new LineItem(
-                rs.getInt("l_id"),
-                product,
-                rs.getInt("quantity"),
-                rs.getFloat("l_price"));
-
-        // Add it to our list of items and return it
-        items.add(lineItem);
-      }
-    } catch (SQLException ex) {
-      System.out.println(ex.getMessage());
-    }
-
-    // Return the list, which might be empty
-    return items;
-  }
-
   public static LineItem createLineItem(LineItem lineItem, int orderID) {
 
     // Write in log that we've reach this step

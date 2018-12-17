@@ -120,8 +120,8 @@ public class OrderController {
           Order order = formOrder(rs, user, lineItemsList, billingAddress, shippingAddress);
 
           orders.add(order);
-        } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId()){
 
+        } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId()){
           product = ProductController.formProduct(rs);
           lineItem = LineItemController.formLineItem(rs, product);
           lineItemsList.add(lineItem);

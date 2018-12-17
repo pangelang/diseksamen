@@ -34,13 +34,7 @@ public class UserController {
     try {
       // Get first object, since we only have one
       if (rs.next()) {
-        user =
-            new User(
-                rs.getInt("u_id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+        user = formUser(rs);
 
         // return the create object
         return user;
@@ -77,13 +71,7 @@ public class UserController {
     try {
       // Loop through DB Data
       while (rs.next()) {
-        User user =
-            new User(
-                rs.getInt("u_id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+        User user = formUser(rs);
 
         // Add element to list
         users.add(user);
@@ -179,13 +167,7 @@ public class UserController {
       ResultSet rs = preparedStatement.executeQuery();
 
       if (rs.next()) {
-        user =
-                new User(
-                        rs.getInt("u_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("password"),
-                        rs.getString("email"));
+        user = formUser(rs);
 
         user.setToken(Token.createToken(user));
 

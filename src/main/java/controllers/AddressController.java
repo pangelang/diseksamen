@@ -13,45 +13,6 @@ public class AddressController {
     dbCon = new DatabaseController();
   }
 
-  public static Address getAddress(int id) {
-
-    // Check for DB Connection
-    if (dbCon == null) {
-      dbCon = new DatabaseController();
-    }
-
-    // Our SQL string
-    String sql = "SELECT * FROM address where a_id=" + id;
-
-    // Do the query and set the initial value to null
-    ResultSet rs = dbCon.query(sql);
-    Address address = null;
-
-    try {
-      // Get the first row and build an address object
-      if (rs.next()) {
-        address =
-            new Address(
-                rs.getInt("a_id"),
-                rs.getString("name"),
-                rs.getString("street_address"),
-                rs.getString("city"),
-                rs.getString("zipcode")
-                );
-
-        // Return our newly added object
-        return address;
-      } else {
-        System.out.println("No address found");
-      }
-    } catch (SQLException ex) {
-      System.out.println(ex.getMessage());
-    }
-
-    // Returns null if we can't find anything.
-    return address;
-  }
-
   public static Address createAddress(Address address) {
 
     // Write in log that we've reach this step
