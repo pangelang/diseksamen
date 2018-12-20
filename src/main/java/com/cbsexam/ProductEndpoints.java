@@ -17,7 +17,9 @@ import utils.Encryption;
 @Path("product")
 public class ProductEndpoints {
 
+  //Instantiating an object of ProductCache
   private static ProductCache productCache = new ProductCache();
+  //Setting forceUpdate to true
   private static boolean forceUpdate = true;
 
   /**
@@ -38,11 +40,20 @@ public class ProductEndpoints {
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    //Return responses
+    if (product != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    } else {
+      // Return a response with status 400 and a message in text
+      return Response.status(400).entity("Could not get product").build();
+    }
   }
 
-  /** @return Responses */
+  /**
+   *
+   * @return Responses
+   */
   @GET
   @Path("/")
   public Response getProducts() {
@@ -58,11 +69,18 @@ public class ProductEndpoints {
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
 
-    //Setting forceUpdate to false so cache doesn't clear unnecessarily
-    forceUpdate = false;
+    //Return responses
+    if (products != null) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+      //Setting forceUpdate to false so cache doesn't clear unnecessarily
+      forceUpdate = false;
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    } else {
+      // Return a response with status 400 and a message in text
+      return Response.status(400).entity("Could not get products").build();
+    }
   }
 
   @POST
@@ -88,6 +106,7 @@ public class ProductEndpoints {
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
+      // Return a response with status 400 and a message in text
       return Response.status(400).entity("Could not create product").build();
     }
   }

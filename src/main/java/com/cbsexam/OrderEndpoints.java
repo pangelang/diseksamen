@@ -19,14 +19,22 @@ import utils.Encryption;
 @Path("order")
 public class OrderEndpoints {
 
+  //Instantiating an object of OrderCache
   private static OrderCache orderCache = new OrderCache();
+  //Setting forceUpdate to true
   private static boolean forceUpdate = true;
 
+  /**
+   *
+   * @param idOrder
+   * @return Responses
+   */
   @GET
   @Path("/{idOrder}")
   public Response getOrder(@PathParam("idOrder") int idOrder) {
 
     // Call our controller-layer in order to get the order from the DB
+    //Changed getOrder method to the one from OrderCache
     Order order = orderCache.getOrder(forceUpdate, idOrder);
 
     // TODO: Add Encryption to JSON: FIX
@@ -36,15 +44,27 @@ public class OrderEndpoints {
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    //Return reponses
+    if (order != null) {
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    } else {
+      // Return a response with status 400 and a message in text
+      return Response.status(400).entity("Could not get order").build();
+    }
   }
 
+  /**
+   *
+   * @return Responses
+   */
   @GET
   @Path("/")
   public Response getOrders() {
 
     // Call our controller-layer in order to get the order from the DB
+    //Changed getOrder method to the one from OrderCache
     ArrayList<Order> orders = orderCache.getOrders(forceUpdate);
 
     // TODO: Add Encryption to JSON: FIX
@@ -54,13 +74,25 @@ public class OrderEndpoints {
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
 
-    //Setting forceUpdate to true, so cache clears when a user is created
-    forceUpdate = false;
+    //Return responses
+    if (orders != null) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+      //Setting forceUpdate to true, so cache clears when a user is created
+      forceUpdate = false;
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    } else {
+      // Return a response with status 400 and a message in text
+      return Response.status(400).entity("Could not get orders").build();
+    }
   }
 
+  /**
+   *
+   * @param body
+   * @return Responses
+   */
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -84,7 +116,6 @@ public class OrderEndpoints {
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
-
       // Return a response with status 400 and a message in text
       return Response.status(400).entity("Could not create order").build();
     }

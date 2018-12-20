@@ -15,9 +15,6 @@ public class AddressController {
 
   public static Address createAddress(Address address) {
 
-    // Write in log that we've reach this step
-    Log.writeLog(ProductController.class.getName(), address, "Actually creating a line item in DB", 0);
-
     // Check for DB Connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
@@ -47,6 +44,7 @@ public class AddressController {
     return address;
   }
 
+  //Method forming billing address
   public static Address formBillingAddress(ResultSet rs) {
     try {
       Address address = new Address(rs.getInt("ba.a_id"),
@@ -56,12 +54,14 @@ public class AddressController {
               rs.getString("ba.zipcode"));
 
       return address;
+
     } catch (SQLException e) {
       e.printStackTrace();
     }
     return null;
   }
 
+  //Method forming shipping address
   public static Address formShippingAddress(ResultSet rs) {
     try {
       Address address = new Address(rs.getInt("sa.a_id"),
@@ -71,6 +71,7 @@ public class AddressController {
               rs.getString("sa.zipcode"));
 
       return address;
+
     } catch (SQLException e) {
       e.printStackTrace();
     }

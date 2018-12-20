@@ -21,19 +21,21 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
+    try {
+
     // Build SQL string to query
-    String sql = "SELECT * FROM orders\n" +
-            "inner join\n" +
-            "user ON orders.user_id = user.u_id\n" +
-            "inner join \n" +
-            "line_item ON orders.o_id = line_item.order_id \n" +
-            "inner join \n" +
-            "address AS ba ON orders.billing_address_id = ba.a_id\n" +
-            "inner join \n" +
-            "address as sa ON orders.shipping_address_id = sa.a_id\n" +
-            "inner join \n" +
-            "product ON line_item.product_id  = product.p_id \n" +
-            "where orders.o_id = " + orderId;
+    String sql = "SELECT * FROM orders " +
+            "INNER JOIN " +
+            "user ON orders.user_id = user.u_id " +
+            "INNER JOIN " +
+            "line_item ON orders.o_id = line_item.order_id " +
+            "INNER JOIN " +
+            "address AS ba ON orders.billing_address_id = ba.a_id " +
+            "INNER JOIN " +
+            "address as sa ON orders.shipping_address_id = sa.a_id " +
+            "INNER JOIN " +
+            "product ON line_item.product_id  = product.p_id " +
+            "WHERE orders.o_id = " + orderId;
 
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
@@ -46,7 +48,6 @@ public class OrderController {
     Address billingAddress;
     Address shippingAddress;
 
-    try {
       while (rs.next()) {
 
         if (order == null) {
@@ -81,18 +82,18 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM orders\n" +
-            "             inner join\n" +
-            "             user ON orders.user_id = user.u_id\n" +
-            "             inner join \n" +
-            "             line_item ON orders.o_id = line_item.order_id \n" +
-            "             inner join \n" +
-            "             address AS ba ON orders.billing_address_id = ba.a_id\n" +
-            "             inner join \n" +
-            "             address as sa ON orders.shipping_address_id = sa.a_id\n" +
-            "             inner join \n" +
-            "             product ON line_item.product_id  = product.p_id\n" +
-            "             order by orders.o_id";
+    String sql = "SELECT * FROM orders " +
+            "INNER JOIN " +
+            "user ON orders.user_id = user.u_id " +
+            "INNER JOIN " +
+            "line_item ON orders.o_id = line_item.order_id " +
+            "INNER JOIN " +
+            "address AS ba ON orders.billing_address_id = ba.a_id " +
+            "INNER JOIN " +
+            "address as sa ON orders.shipping_address_id = sa.a_id " +
+            "INNER JOIN " +
+            "product ON line_item.product_id  = product.p_id " +
+            "ORDER BY orders.o_id";
 
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
@@ -222,13 +223,13 @@ public class OrderController {
       return order;
   }
 
-  private static Order formOrder (ResultSet rs, User user, ArrayList<LineItem> lineItemsList, Address billingsAddress, Address shippingAddress) {
+  private static Order formOrder (ResultSet rs, User user, ArrayList<LineItem> lineItemsList, Address billingAddress, Address shippingAddress) {
     try {
       Order order = new Order(
                       rs.getInt("o_id"),
                       user,
                       lineItemsList,
-                      billingsAddress,
+                      billingAddress,
                       shippingAddress,
                       rs.getFloat("order_total"),
                       rs.getLong("order_created_at"),

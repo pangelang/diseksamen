@@ -31,9 +31,13 @@ public class ReviewEndpoints {
     //Adds encryption
     json = Encryption.encryptDecryptXOR(json);
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    //Return responses
+    if (reviews != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+    } else {
+      // Return a response with status 400 and a message in text
+      return Response.status(400).entity("Could not get reviews").build();
+    }
   }
-
-
 }

@@ -26,6 +26,8 @@ public class DatabaseController {
   public static Connection getConnection() {
     try {
 
+      //Method won't create new connection everytime.
+      //Change was made to enable transactions in get order methods to work.
       if (connection == null) {
         // Set the dataabase connect with the data from the config
         String url =
@@ -86,6 +88,12 @@ public class DatabaseController {
     return rs;
   }
 
+  /**
+   * Do a insert in the database
+   *
+   * @param sql
+   * @return result
+   */
   public int insert(String sql) {
 
     // Set key to 0 as a start
@@ -105,7 +113,9 @@ public class DatabaseController {
 
       // Get our key back in order to update the user
       ResultSet generatedKeys = statement.getGeneratedKeys();
+
       if (generatedKeys.next()) {
+
         return generatedKeys.getInt(1);
       }
     } catch (SQLException e) {
@@ -115,10 +125,17 @@ public class DatabaseController {
     return result;
   }
 
+  /**
+   * Do an update in the database
+   *
+   * @param sql
+   * @return rowaffected or false
+   */
   public boolean update (String sql) {
 
     if (connection == null)
       connection = getConnection();
+
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -133,6 +150,12 @@ public class DatabaseController {
     return false;
   }
 
+  /**
+   * Do a delete in the database
+   *
+   * @param sql
+   * @return true or false
+   */
   public boolean delete(String sql) {
 
     // Check that we have connection

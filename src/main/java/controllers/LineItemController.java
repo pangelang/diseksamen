@@ -55,6 +55,7 @@ public class LineItemController {
     return lineItem;
   }
 
+  //Method forming line item
   public static LineItem formLineItem (ResultSet rs, Product product) {
     try {
       LineItem lineItem = new LineItem(rs.getInt("l_id"),product,
