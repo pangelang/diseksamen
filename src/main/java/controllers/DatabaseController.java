@@ -121,6 +121,7 @@ public class DatabaseController {
     } catch (SQLException e) {
       System.out.println(e.getMessage());
     }
+
     // Return the resultset which at this point will be null
     return result;
   }

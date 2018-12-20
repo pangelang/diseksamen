@@ -11,12 +11,18 @@ import utils.Log;
 
 public class ProductController {
 
+  //For establishing a connection to the database
   private static DatabaseController dbCon;
 
   public ProductController() {
     dbCon = new DatabaseController();
   }
 
+  /**
+   *
+   * @param id
+   * @return
+   */
   public static Product getProduct(int id) {
 
     // check for connection
@@ -39,7 +45,7 @@ public class ProductController {
         // Return the product
         return product;
       } else {
-        System.out.println("No user found");
+        System.out.println("No product found");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -49,6 +55,12 @@ public class ProductController {
     return product;
   }
 
+  /**
+   * Works in the same way as method above
+   *
+   * @param sku
+   * @return
+   */
   public static Product getProductBySku(String sku) {
 
     if (dbCon == null) {
@@ -82,18 +94,25 @@ public class ProductController {
    */
   public static ArrayList<Product> getProducts() {
 
+    //Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
     // TODO: Use caching layer.: FIX (see ProductEndpoints)
 
+      //Build SQL query
       String sql = "SELECT * FROM product";
 
+      //Run the query
       ResultSet rs = dbCon.query(sql);
+
+      //Instantiate an ArrayList for the products
       ArrayList<Product> products = new ArrayList<Product>();
 
       try {
+        //Getting first row in result set, setting product with the form method and adding to ArrayList
+        //before going to next row
         while (rs.next()) {
           Product product = formProduct(rs);
 
@@ -106,10 +125,12 @@ public class ProductController {
     return products;
   }
 
+  /**
+   *
+   * @param product
+   * @return
+   */
   public static Product createProduct(Product product) {
-
-    // Write in log that we've reach this step
-    Log.writeLog(ProductController.class.getName(), product, "Actually creating a product in DB", 0);
 
     // Set creation time for product.
     product.setCreatedTime(System.currentTimeMillis() / 1000L);
@@ -147,6 +168,7 @@ public class ProductController {
     return product;
   }
 
+  //Method for forming products
   public static Product formProduct(ResultSet rs) {
     try {
         Product product = new Product(rs.getInt("p_id"),

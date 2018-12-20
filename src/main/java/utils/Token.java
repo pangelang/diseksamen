@@ -16,9 +16,11 @@ import java.util.Date;
 
 public final class Token {
 
+    //Generating token
     public static String createToken(User user) {
 
         try {
+            //Setting hashing algorithm to use and claims
             Algorithm algorithm = Algorithm.HMAC256(Config.getSecret());
             String token = JWT.create()
                     .withIssuer("auth0")
@@ -34,6 +36,7 @@ public final class Token {
         return null;
     }
 
+    //Verifying token
     public static boolean verifyToken(String token, User user) {
 
         try {

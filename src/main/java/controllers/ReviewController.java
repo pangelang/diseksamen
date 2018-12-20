@@ -7,6 +7,11 @@ import org.apache.solr.common.SolrDocumentList;
 
 public class ReviewController {
 
+  /**
+   *
+   * @param title
+   * @return
+   */
   public static ArrayList<Review> searchByTitle(String title) {
 
     // We wish to have an empty list for the results

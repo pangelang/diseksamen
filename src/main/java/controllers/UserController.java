@@ -17,6 +17,11 @@ public class UserController {
     dbCon = new DatabaseController();
   }
 
+  /**
+   *
+   * @param id
+   * @return user
+   */
   public static User getUser(int id) {
 
     // Check for connection
@@ -32,12 +37,13 @@ public class UserController {
     User user = null;
 
     try {
-      // Get first object, since we only have one
+      // Get first object, since we only have one and form it
       if (rs.next()) {
         user = formUser(rs);
 
         // return the create object
         return user;
+
       } else {
         System.out.println("No user found");
       }
@@ -52,7 +58,7 @@ public class UserController {
   /**
    * Get all users in database
    *
-   * @return
+   * @return users
    */
   public static ArrayList<User> getUsers() {
 
@@ -64,12 +70,12 @@ public class UserController {
     // Build SQL
     String sql = "SELECT * FROM user";
 
-    // Do the query and initialyze an empty list for use if we don't get results
+    // Do the query and instantiate an empty list for use if we don't get results
     ResultSet rs = dbCon.query(sql);
-    ArrayList<User> users = new ArrayList<User>();
+    ArrayList<User> users = new ArrayList<>();
 
     try {
-      // Loop through DB Data
+      // Loop through DB Data and form user
       while (rs.next()) {
         User user = formUser(rs);
 
@@ -84,6 +90,11 @@ public class UserController {
     return users;
   }
 
+  /**
+   *
+   * @param user
+   * @return user
+   */
   public static User createUser(User user) {
 
     // Write in log that we've reach this step
@@ -97,11 +108,12 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    // Insert the user in the DB
     // TODO: Hash the user password before saving it.: FIX
 
+    //Hasing pw
     user.setPassword(Hashing.sha(user.getPassword()));
 
+    // Insert the user in the DB
     int userID = dbCon.insert(
         "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
             + user.getFirstname()
@@ -127,16 +139,22 @@ public class UserController {
     return user;
   }
 
+  /**
+   *
+   * @param user
+   * @return affected
+   */
   public static boolean updateUser(User user) {
 
-      Log.writeLog(UserController.class.getName(), user, "Actually updating a user in DB", 0);
-
+      //Checking for connection
       if (dbCon == null) {
         dbCon = new DatabaseController();
       }
 
+      //Hasing pw
       user.setPassword(Hashing.sha(user.getPassword()));
 
+      //Updating in database
       boolean affected = dbCon.update(
               "UPDATE user SET " +
                       "first_name = " + "'" + user.getFirstname() + "'," +
@@ -145,27 +163,38 @@ public class UserController {
                       "email = " + "'" + user.getEmail() + "'" +
                       "WHERE u_id = " + "'" + user.getId() + "'");
 
+      //Return boolean
       return affected;
   }
 
+  /**
+   *
+   * @param user
+   * @return user
+   */
   public static User login(User user) {
 
+    //Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
+    //Hashing pw
     user.setPassword(Hashing.sha(user.getPassword()));
 
     try {
-
+      //Building SQL query
       String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
 
+      //Prepared statement
       PreparedStatement preparedStatement = dbCon.getConnection().prepareStatement(sql);
       preparedStatement.setString(1, user.getEmail());
       preparedStatement.setString(2, user.getPassword());
 
+      //Executing the query
       ResultSet rs = preparedStatement.executeQuery();
 
+      //Looping through result set once, forming user and creating a token
       if (rs.next()) {
         user = formUser(rs);
 
@@ -173,6 +202,7 @@ public class UserController {
 
         System.out.println("Logged in");
 
+        //Return user
         return user;
 
       } else {
@@ -184,12 +214,19 @@ public class UserController {
     return null;
   }
 
+  /**
+   *
+   * @param idUser
+   * @return deleted
+   */
   public static boolean deleteUser(int idUser) {
 
+    //Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
+    //Building SQL query
     String sql = "DELETE FROM user WHERE u_id = " + idUser;
 
     boolean deleted = dbCon.delete(sql);
@@ -197,6 +234,7 @@ public class UserController {
     return deleted;
   }
 
+  //Method forming user
   public static User formUser(ResultSet rs){
     try{
       User user = new User(rs.getInt("u_id"),

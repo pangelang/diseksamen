@@ -9,12 +9,18 @@ import utils.Log;
 
 public class OrderController {
 
+  //For establishing connection to the database
   private static DatabaseController dbCon;
 
   public OrderController() {
     dbCon = new DatabaseController();
   }
 
+  /**
+   *
+   * @param orderId
+   * @return order
+   */
   public static Order getOrder(int orderId) {
     // check for connection
     if (dbCon == null) {
@@ -22,7 +28,6 @@ public class OrderController {
     }
 
     try {
-
     // Build SQL string to query
     String sql = "SELECT * FROM orders " +
             "INNER JOIN " +
@@ -40,6 +45,7 @@ public class OrderController {
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
 
+    //Declaring objects, initializing order to null and instantiating an ArrayList for line items
     Order order = null;
     User user;
     LineItem lineItem;
@@ -51,16 +57,19 @@ public class OrderController {
       while (rs.next()) {
 
         if (order == null) {
-
+          //Setting objects needed to create an order
           user = UserController.formUser(rs);
           product = ProductController.formProduct(rs);
           lineItem = LineItemController.formLineItem(rs, product);
           lineItemsList.add(lineItem);
           billingAddress = AddressController.formBillingAddress(rs);
           shippingAddress = AddressController.formShippingAddress(rs);
+
+          //Creating order
           order = formOrder(rs, user, lineItemsList, billingAddress, shippingAddress);
 
         } else {
+          //If the result set is more than one line (ie. more products), this will add them to the order
           product = ProductController.formProduct(rs);
           lineItem = LineItemController.formLineItem(rs, product);
           order.getLineItems().add(lineItem);
@@ -75,13 +84,17 @@ public class OrderController {
     return null;
   }
 
-
+  /**
+   *
+   * @return order
+   */
   public static ArrayList<Order> getOrders() {
     // check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
+    //Building SQL query
     String sql = "SELECT * FROM orders " +
             "INNER JOIN " +
             "user ON orders.user_id = user.u_id " +
@@ -97,12 +110,13 @@ public class OrderController {
 
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
-
+    //Instantiate an orders ArrayList
     ArrayList<Order> orders = new ArrayList<>();
 
     try {
       while(rs.next()) {
 
+        //Declaring objects and instantiating an ArrayList for line items
         User user;
         LineItem lineItem;
         Address billingAddress;
@@ -110,6 +124,7 @@ public class OrderController {
         Product product;
         ArrayList<LineItem> lineItemsList = new ArrayList<>();
 
+        //Setting objects needed to create an order if there is no order created or the order id has changed
         if (orders.isEmpty() || rs.getInt("o_id") != orders.get(orders.size()-1).getId()) {
 
           user = UserController.formUser(rs);
@@ -118,10 +133,13 @@ public class OrderController {
           lineItemsList.add(lineItem);
           billingAddress = AddressController.formBillingAddress(rs);
           shippingAddress = AddressController.formShippingAddress(rs);
-          Order order = formOrder(rs, user, lineItemsList, billingAddress, shippingAddress);
 
+          //Creating order and adding it to the orders ArrayList
+          Order order = formOrder(rs, user, lineItemsList, billingAddress, shippingAddress);
           orders.add(order);
 
+          //If an order in the arraylist matches the order in the resultset, this will add multiple products in case
+          //it's needed
         } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId()){
           product = ProductController.formProduct(rs);
           lineItem = LineItemController.formLineItem(rs, product);
@@ -130,20 +148,23 @@ public class OrderController {
         }
 
       }
+      //Return the build orders
       return orders;
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
     }
 
-    // return the orders
+    // return the orders (null)
     return orders;
 
   }
 
+  /**
+   *
+   * @param order
+   * @return order
+   */
   public static Order createOrder(Order order) {
-
-    // Write in log that we've reach this step
-    Log.writeLog(OrderController.class.getName(), order, "Actually creating a order in DB", 0);
 
     // Set creation and updated time for order.
     order.setCreatedAt(System.currentTimeMillis() / 1000L);
@@ -155,6 +176,7 @@ public class OrderController {
     }
 
     try {
+      //Setting autocommit to false
       dbCon.getConnection().setAutoCommit(false);
 
       // Save addresses to database and save them back to initial order instance
@@ -164,11 +186,9 @@ public class OrderController {
       // Save the user to the database and save them back to initial order instance
       order.setCustomer(UserController.getUser(order.getCustomer().getId()));
 
-      //if (order.getShippingAddress().getId() == order.getBillingAddress().getId() + 1) {
-
         // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.: FIX
 
-        // Insert the product in the DB
+        // Insert the order in the DB
         int orderID = dbCon.insert(
                 "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, order_created_at, order_updated_at) VALUES("
                         + order.getCustomer().getId()
@@ -197,15 +217,17 @@ public class OrderController {
           item = LineItemController.createLineItem(item, order.getId());
           items.add(item);
         }
-
+        //Add line items to order
         order.setLineItems(items);
 
+        //Commit transactions
         dbCon.getConnection().commit();
 
       } catch(SQLException | NullPointerException e){
         e.printStackTrace();
         if (dbCon.getConnection() != null) {
           try {
+            //Rolling back if exception is caught
             dbCon.getConnection().rollback();
             System.out.println("Rollback");
           } catch (SQLException ex) {
@@ -214,6 +236,7 @@ public class OrderController {
         }
       } finally{
         try {
+          //Setting autocommit to true again
           dbCon.getConnection().setAutoCommit(true);
         } catch (SQLException e) {
           e.printStackTrace();
@@ -223,6 +246,7 @@ public class OrderController {
       return order;
   }
 
+  //Method forming order
   private static Order formOrder (ResultSet rs, User user, ArrayList<LineItem> lineItemsList, Address billingAddress, Address shippingAddress) {
     try {
       Order order = new Order(

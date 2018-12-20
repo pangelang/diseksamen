@@ -27,6 +27,7 @@ public class OrderCache {
         // If we whish to clear cache, we can set force update.
         // Otherwise we look at the age of the cache and figure out if we should update.
         // If the list is empty we also check for new orders
+
         if (forceUpdate
                 || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L))
                 || this.orders.isEmpty()) {
@@ -41,19 +42,27 @@ public class OrderCache {
             this.created = System.currentTimeMillis() / 1000L;
         }
 
-        // Return the documents
+        // Return the orders
         return this.orders;
     }
 
     public Order getOrder(Boolean forceUpdate, int idOrder) {
 
+        // If we whish to clear cache, we can set force update.
+        // Otherwise we look at the age of the cache and figure out if we should update.
+        // If the list is empty we also check for new orders
+
+        //Instantiating an order object
         Order order = new Order();
 
         if (forceUpdate) {
+
+            // Get orders from controller, since we wish to update.
             order = OrderController.getOrder(idOrder);
 
             return order;
         } else {
+            //If cache is up to date it checks the ArrayList until the right id is found
             for (Order o : orders) {
                 if (idOrder == order.getId()) {
                     order = o;
