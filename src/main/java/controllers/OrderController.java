@@ -138,7 +138,7 @@ public class OrderController {
           Order order = formOrder(rs, user, lineItemsList, billingAddress, shippingAddress);
           orders.add(order);
 
-          //If an order in the arraylist matches the order in the resultset, this will add multiple products in case
+          //If an order in the ArrayList matches the order in the resultset, this will add multiple products in case
           //it's needed
         } else if (rs.getInt("o_id") == orders.get(orders.size()-1).getId()){
           product = ProductController.formProduct(rs);
